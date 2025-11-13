@@ -1,26 +1,6 @@
 # NLP实验-RAG-251113
 
-## 零、相关补充说明
 
-### 0.1 源码和实验手册
-
-下载链接：[rag_starter.zip](https://csonline.jiangnan.edu.cn/authincludes/userfiles.jsp?f=946cf0a37b3624a38b7688d655d2e86d.zip)
-
-下载保存时改个文件名，比如`rag_starter.zip`。
-
-用可以直接下载保存到开发板上。比如，保存到 `/home/cg/ailab`。
-
-依次执行以下命令，将 zip 包解压缩：
-```bash
-cd /home/cg/ailab       # 假定 zip 文件保存在 /home/cg/ailab 目录
-ls -l                   # 确认下 zip 文件是否在该目录中
-unzip rag_starter.zip   # 假定 zip 文件名是rag_starter.zip
-```
-
-
-
-
-<!--  -->
 ## 一、实验内容
 ### 1.1 实验内容
 
@@ -95,16 +75,9 @@ rag_starter/
 
 配置模块负责管理整个系统的配置参数，使用 `pydantic-settings` 库实现配置管理。
 
-#### 样例代码
+#### 2.3.1 配置类定义
 
 ```python
-"""
-配置文件 - 存储模型端点和其他配置信息
-"""
-from typing import Optional
-from pydantic_settings import BaseSettings
-
-
 class Settings(BaseSettings):
     """应用配置"""
     
@@ -128,17 +101,9 @@ class Settings(BaseSettings):
     
     # 检索配置
     TOP_K: int = 4  # 检索相关文档数量
-    
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-
-
-# 全局配置实例
-settings = Settings()
 ```
 
-#### 配置参数说明
+#### 2.3.2 配置参数说明
 
 1. **LLM 模型配置**
    - `LLM_BASE_URL`: 大语言模型的 API 端点地址
@@ -159,7 +124,7 @@ settings = Settings()
 4. **检索配置**
    - `TOP_K`: 检索时返回的最相关文档数量（4 个）
 
-#### 环境变量支持
+#### 2.3.3 环境变量支持
 
 配置类支持从 `.env` 文件读取配置，方便在不同环境中使用不同的配置：
 
@@ -169,26 +134,15 @@ class Config:
     env_file_encoding = "utf-8"
 ```
 
-<!--  -->
 ### 2.4 模型封装模块详解
 
 #### 2.4.1 LLM 模型封装（models/llm.py）
 
-LLM 模型封装模块提供了统一的接口来获取大语言模型实例。核心函数：`get_llm()`。
+LLM 模型封装模块提供了统一的接口来获取大语言模型实例。
 
-##### 样例代码
+##### 核心函数：`get_llm()`
 
 ```python
-"""
-LLM 模型封装 - 使用 LangChain 的 ChatOpenAI 兼容接口
-"""
-from typing import Optional
-from langchain_openai import ChatOpenAI
-from langchain_core.language_models.chat_models import BaseChatModel
-
-from config.settings import settings
-
-
 def get_llm(
     temperature: Optional[float] = None,
     max_tokens: Optional[int] = None,
@@ -228,20 +182,11 @@ response = llm.invoke("你好")
 
 #### 2.4.2 嵌入模型封装（models/embedding.py）
 
-嵌入模型封装模块提供了获取文本嵌入向量的接口。核心函数：`get_embedding_model()`。
+嵌入模型封装模块提供了获取文本嵌入向量的接口。
 
-##### 样例代码
+##### 核心函数：`get_embedding_model()`
 
 ```python
-"""
-嵌入模型封装 - 使用 LangChain 的 OpenAIEmbeddings 兼容接口
-"""
-from langchain_openai import OpenAIEmbeddings
-from langchain_core.embeddings import Embeddings
-
-from config.settings import settings
-
-
 def get_embedding_model() -> Embeddings:
     """
     获取嵌入模型实例
@@ -279,36 +224,11 @@ vector = embeddings.embed_query("这是要嵌入的文本")
 
 工具函数模块提供了文档加载和文本分割的功能。
 
-#### 样例代码
+#### 2.5.1 文档加载函数：`load_documents()`
 
 ```python
-"""
-文档加载和分割工具
-"""
-from pathlib import Path
-from typing import List, Union
-
-from langchain_community.document_loaders import (
-    TextLoader,
-    PyPDFLoader,
-    UnstructuredMarkdownLoader,
-)
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_core.documents import Document
-
-from config.settings import settings
-
-
 def load_documents(file_path: Union[str, Path]) -> List[Document]:
-    """
-    根据文件类型加载文档
-    
-    Args:
-        file_path: 文件路径
-    
-    Returns:
-        文档列表
-    """
+    """根据文件类型加载文档"""
     file_path = Path(file_path)
     
     if not file_path.exists():
@@ -324,23 +244,28 @@ def load_documents(file_path: Union[str, Path]) -> List[Document]:
     elif suffix in [".md", ".markdown"]:
         loader = UnstructuredMarkdownLoader(str(file_path))
     else:
-        # 默认使用文本加载器
         loader = TextLoader(str(file_path), encoding="utf-8")
     
     documents = loader.load()
     return documents
+```
 
+**功能说明**：
+- 支持多种文件格式：TXT、PDF、Markdown
+- 根据文件扩展名自动选择对应的加载器
+- 返回 LangChain 的 `Document` 对象列表
+- 每个 `Document` 包含 `page_content`（文本内容）和 `metadata`（元数据）
 
+**支持的格式**：
+- `.txt`: 纯文本文件，使用 `TextLoader`
+- `.pdf`: PDF 文件，使用 `PyPDFLoader`（需要安装 `pypdf`）
+- `.md` / `.markdown`: Markdown 文件，使用 `UnstructuredMarkdownLoader`
+
+#### 2.5.2 文档分割函数：`split_documents()`
+
+```python
 def split_documents(documents: List[Document]) -> List[Document]:
-    """
-    将文档分割成小块
-    
-    Args:
-        documents: 原始文档列表
-    
-    Returns:
-        分割后的文档列表
-    """
+    """将文档分割成小块"""
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=settings.CHUNK_SIZE,
         chunk_overlap=settings.CHUNK_OVERLAP,
@@ -349,26 +274,9 @@ def split_documents(documents: List[Document]) -> List[Document]:
     
     split_docs = text_splitter.split_documents(documents)
     return split_docs
-
-
 ```
 
-**文档加载函数：`load_documents()`功能说明**：
-- 支持多种文件格式：TXT、PDF、Markdown
-- 根据文件扩展名自动选择对应的加载器
-- 返回 LangChain 的 `Document` 对象列表
-- 每个 `Document` 包含 `page_content`（文本内容）和 `metadata`（元数据）
-
-**文档加载函数：`load_documents()`支持的格式**：
-- `.txt`: 纯文本文件，使用 `TextLoader`
-- `.pdf`: PDF 文件，使用 `PyPDFLoader`（需要安装 `pypdf`）
-- `.md` / `.markdown`: Markdown 文件，使用 `UnstructuredMarkdownLoader`
-
-#### 2.5.2 文档分割函数：`split_documents()`
-
-
-
-**文档分割函数：`split_documents()`功能说明**：
+**功能说明**：
 - 使用 `RecursiveCharacterTextSplitter` 进行智能分割
 - 按照配置的 `CHUNK_SIZE`（1000 字符）分割文档
 - 使用 `CHUNK_OVERLAP`（200 字符）重叠，保持上下文连贯性
@@ -379,213 +287,9 @@ def split_documents(documents: List[Document]) -> List[Document]:
 2. **检索精度**：小块的文档片段能够更精确地匹配用户问题
 3. **上下文管理**：只检索相关片段，减少无关信息干扰
 
-<!--  -->
 ## 2.6 RAG 链核心模块详解（chains/rag_chain.py）
 
 RAG 链模块是整个系统的核心，负责协调检索和生成过程。
-
-#### 完整样例代码
-
-```python
-"""
-RAG 链实现 - 检索增强生成
-"""
-from typing import List, Optional
-from pathlib import Path
-
-from langchain_community.vectorstores import FAISS
-from langchain_core.documents import Document
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.runnables import RunnablePassthrough
-from langchain_core.output_parsers import StrOutputParser
-
-from models import get_llm, get_embedding_model
-from utils import load_documents, split_documents
-from config.settings import settings
-
-
-class RAGChain:
-    """RAG 链类，封装检索和生成逻辑"""
-    
-    def __init__(
-        self,
-        vector_store_path: Optional[str] = None,
-        persist: bool = True,
-    ):
-        """
-        初始化 RAG 链
-        
-        Args:
-            vector_store_path: 向量存储路径，默认使用配置值
-            persist: 是否持久化向量存储
-        """
-        self.vector_store_path = vector_store_path or settings.VECTOR_STORE_PATH
-        self.persist = persist
-        self.llm = get_llm()
-        self.embeddings = get_embedding_model()
-        self.vector_store: Optional[FAISS] = None
-        self.retriever = None
-        self.chain = None
-        
-        # 创建向量存储目录
-        Path(self.vector_store_path).mkdir(parents=True, exist_ok=True)
-    
-    def build_vector_store(self, documents: List[Document], append: bool = False) -> None:
-        """
-        构建向量存储
-        
-        Args:
-            documents: 文档列表
-            append: 如果为 True 且向量存储已存在，则追加文档；否则覆盖
-        """
-        if not documents:
-            raise ValueError("文档列表不能为空")
-        
-        # 分割文档
-        split_docs = split_documents(documents)
-        
-        # 检查向量存储是否已存在
-        vector_store_file = Path(self.vector_store_path) / "index.faiss"
-        
-        if append and vector_store_file.exists():
-            # 如果启用追加模式且向量存储已存在，则加载并添加文档
-            print("检测到已存在的向量存储，正在加载...")
-            self.vector_store = FAISS.load_local(
-                self.vector_store_path,
-                self.embeddings,
-                allow_dangerous_deserialization=True,
-            )
-            print(f"正在添加 {len(split_docs)} 个文档块到现有向量存储...")
-            self.vector_store.add_documents(split_docs)
-        else:
-            # 创建新的向量存储（覆盖已存在的）
-            if vector_store_file.exists():
-                print("警告: 向量存储已存在，将被覆盖。如需增量添加，请使用 append=True 参数。")
-            self.vector_store = FAISS.from_documents(
-                documents=split_docs,
-                embedding=self.embeddings,
-            )
-        
-        # 持久化
-        if self.persist:
-            self.vector_store.save_local(self.vector_store_path)
-        
-        # 创建检索器
-        self.retriever = self.vector_store.as_retriever(
-            search_kwargs={"k": settings.TOP_K}
-        )
-        
-        # 构建 RAG 链
-        self._build_chain()
-    
-    def load_vector_store(self) -> None:
-        """
-        从磁盘加载向量存储
-        """
-        vector_store_file = Path(self.vector_store_path) / "index.faiss"
-        
-        if not vector_store_file.exists():
-            raise FileNotFoundError(
-                f"向量存储不存在: {self.vector_store_path}。请先调用 build_vector_store() 构建向量存储。"
-            )
-        
-        self.vector_store = FAISS.load_local(
-            self.vector_store_path,
-            self.embeddings,
-            allow_dangerous_deserialization=True,
-        )
-        
-        # 创建检索器
-        self.retriever = self.vector_store.as_retriever(
-            search_kwargs={"k": settings.TOP_K}
-        )
-        
-        # 构建 RAG 链
-        self._build_chain()
-    
-    def _build_chain(self) -> None:
-        """构建 RAG 链"""
-        # 定义提示模板
-        template = """基于以下上下文信息回答问题。如果上下文中没有相关信息，请说明你不知道，不要编造答案。
-
-上下文信息：
-{context}
-
-问题：{question}
-
-请提供准确、有用的答案："""
-        
-        prompt = ChatPromptTemplate.from_template(template)
-        
-        # 构建链：检索 -> 格式化 -> LLM -> 输出解析
-        self.chain = (
-            {
-                "context": self.retriever | self._format_docs,
-                "question": RunnablePassthrough(),
-            }
-            | prompt
-            | self.llm
-            | StrOutputParser()
-        )
-    
-    @staticmethod
-    def _format_docs(docs: List[Document]) -> str:
-        """
-        格式化检索到的文档
-        
-        Args:
-            docs: 文档列表
-        
-        Returns:
-            格式化后的字符串
-        """
-        return "\n\n".join(doc.page_content for doc in docs)
-    
-    def query(self, question: str) -> str:
-        """
-        查询 RAG 系统
-        
-        Args:
-            question: 用户问题
-        
-        Returns:
-            生成的答案
-        """
-        if self.chain is None:
-            raise ValueError(
-                "RAG 链未初始化。请先调用 build_vector_store() 或 load_vector_store()。"
-            )
-        
-        return self.chain.invoke(question)
-    
-    def add_documents(self, documents: List[Document]) -> None:
-        """
-        向现有向量存储添加文档
-        
-        Args:
-            documents: 新文档列表
-        """
-        if self.vector_store is None:
-            raise ValueError("向量存储未初始化。请先调用 build_vector_store() 或 load_vector_store()。")
-        
-        # 分割文档
-        split_docs = split_documents(documents)
-        
-        # 添加文档到向量存储
-        self.vector_store.add_documents(split_docs)
-        
-        # 重新创建检索器
-        self.retriever = self.vector_store.as_retriever(
-            search_kwargs={"k": settings.TOP_K}
-        )
-        
-        # 重新构建链
-        self._build_chain()
-        
-        # 持久化
-        if self.persist:
-            self.vector_store.save_local(self.vector_store_path)
-```
 
 #### 2.6.1 RAGChain 类初始化
 
@@ -837,129 +541,9 @@ def add_documents(self, documents: List[Document]) -> None:
 
 **功能**：支持向已有向量存储添加新文档，实现知识库的增量更新。
 
-<!--  -->
 ### 2.7 主程序模块详解（main.py）
 
 主程序提供了命令行接口，支持三种运行模式。
-
-#### 完整样例代码
-
-```python
-"""
-RAG 系统主程序入口
-"""
-import argparse
-from pathlib import Path
-
-from chains import RAGChain
-from utils import load_documents
-
-
-def main():
-    """主函数"""
-    parser = argparse.ArgumentParser(description="RAG 系统 - 检索增强生成")
-    parser.add_argument(
-        "--mode",
-        type=str,
-        choices=["build", "query", "interactive"],
-        default="interactive",
-        help="运行模式: build(构建向量存储), query(单次查询), interactive(交互模式)",
-    )
-    parser.add_argument(
-        "--file",
-        type=str,
-        help="要加载的文档文件路径（用于 build 模式）",
-    )
-    parser.add_argument(
-        "--question",
-        type=str,
-        help="要查询的问题（用于 query 模式）",
-    )
-    parser.add_argument(
-        "--vector-store",
-        type=str,
-        default="./vectorstore",
-        help="向量存储路径",
-    )
-    parser.add_argument(
-        "--append",
-        action="store_true",
-        help="增量添加模式：如果向量存储已存在，则追加文档而不是覆盖（仅用于 build 模式）",
-    )
-    
-    args = parser.parse_args()
-    
-    # 初始化 RAG 链
-    rag = RAGChain(vector_store_path=args.vector_store)
-    
-    if args.mode == "build":
-        # 构建模式：加载文档并构建向量存储
-        if not args.file:
-            print("错误: build 模式需要指定 --file 参数")
-            return
-        
-        print(f"正在加载文档: {args.file}")
-        documents = load_documents(args.file)
-        print(f"已加载 {len(documents)} 个文档")
-        
-        if args.append:
-            print("使用增量添加模式...")
-        else:
-            print("正在构建向量存储...")
-        rag.build_vector_store(documents, append=args.append)
-        print(f"向量存储已构建并保存到: {args.vector_store}")
-    
-    elif args.mode == "query":
-        # 查询模式：单次查询
-        if not args.question:
-            print("错误: query 模式需要指定 --question 参数")
-            return
-        
-        print("正在加载向量存储...")
-        try:
-            rag.load_vector_store()
-        except FileNotFoundError:
-            print("错误: 向量存储不存在。请先使用 build 模式构建向量存储。")
-            return
-        
-        print(f"问题: {args.question}")
-        print("正在生成答案...")
-        answer = rag.query(args.question)
-        print(f"\n答案:\n{answer}")
-    
-    elif args.mode == "interactive":
-        # 交互模式：持续对话
-        print("正在加载向量存储...")
-        try:
-            rag.load_vector_store()
-        except FileNotFoundError:
-            print("错误: 向量存储不存在。请先使用 build 模式构建向量存储。")
-            print("示例命令: python main.py --mode build --file your_document.txt")
-            return
-        
-        print("RAG 系统已就绪！输入 'quit' 或 'exit' 退出。\n")
-        
-        while True:
-            question = input("请输入您的问题: ").strip()
-            
-            if question.lower() in ["quit", "exit", "退出"]:
-                print("再见！")
-                break
-            
-            if not question:
-                continue
-            
-            try:
-                print("正在生成答案...")
-                answer = rag.query(question)
-                print(f"\n答案:\n{answer}\n")
-            except Exception as e:
-                print(f"错误: {e}\n")
-
-
-if __name__ == "__main__":
-    main()
-```
 
 #### 2.7.1 命令行参数解析
 
@@ -1109,7 +693,7 @@ elif args.mode == "interactive":
 ```bash
 python main.py --mode interactive
 ```
-<!--  -->
+
 ### 2.8 实验步骤1：安装依赖
 
 首先，需要安装项目依赖。在项目根目录下运行：
