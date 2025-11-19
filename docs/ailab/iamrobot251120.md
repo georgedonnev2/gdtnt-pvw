@@ -13,12 +13,11 @@
 
 ### 0.2 账号密码，IP地址
 
-1. 账号密码
-
+1、账号密码
 - jetson / yahboom
 - root / yahboom
 
-2. IP地址
+2、IP地址
 
 执行 `ifconfig | grep 172`，屏幕输出 `172.18.xx.xx` 就是本开发板的 IP 地址。
 
@@ -26,7 +25,7 @@
 
 ### 0.3 尝试样例是否运行正常
 
-1. 样例的目录
+1、样例的目录
 
 开机后，找到样例所在的目录 `elephant-ai`。可能在当前目录下，即 `/home/jetson/elephant-ai`，也可能在根目录下，即 `/elephant-ai`。
 
@@ -36,7 +35,7 @@
 - `cd`。切换到用户的 HOME 目录。每个用户都有 HOME 目录，默认是 `/home/用户名`。比如对于 `jetson` 用户，默认的 HOME 目录是 `/home/jetson`。
 - `cd 目标目录名`。切换到目标目录。比如切换到根目录，可执行 `cd /`。
 
-2. 在样例的目录中，修改 `agent.py`
+2、在样例的目录中，修改 `agent.py`
 
 将 `agent.py` 中的 `RequestLLM()` 的 `base_url` 和 `model_name`，修改为如下值。
 ```python  
@@ -45,25 +44,25 @@ if __name__ == "__main__":
     llm = RequestLLM(base_url="https://api.deepseek.com/v1/", model_name="deepseek-chat")
 ```
 
-3. 运行样例
+3、运行样例
 
 在样例目录中，运行 `sudo python3 agent.py`。稍等几秒后，命令行界面出现提示符 `<USER>:`。
 
 然后输入 `grap blue cube and move to -80, 200, 110` ，按回车。随后观察机械臂是否能抓取蓝色积木，并放到右边区域。
 
-4. 退出样例
+4、退出样例
 
 同时按下 `ctrl` 和 `c`，可退出样例。
 
 ### 0.4 笔记本和开发板连接
 
-1. 可在笔记本上通过 vscode 打开开发板上的代码
+1、可在笔记本上通过 vscode 打开开发板上的代码
 
 可在开发板上安装 vscode，然后在开发板上用 vscode 编辑代码。
 
 也可以在笔记本上的 vscode，直接打开开发板上的代码。如何配置操作，可参考 [vscode通过ssh连接服务器实现免密登录+删除（吐血总结）](https://blog.csdn.net/Oxford1151/article/details/137228119)。
 
-2. Windows 笔记本 SSH 登录开发板
+2、Windows 笔记本 SSH 登录开发板
 
 如需要在 Windows 笔记本通过 SSH 登录开发板，可在 `cmd` 或 `powershell` 窗口中，执行 `ssh 用户名@开发板的IP地址` 登录开发板。比如，`ssh jetson@172.18.139.108`。
 
