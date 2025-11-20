@@ -407,16 +407,17 @@ class MoveTo(BaseTool):
     ],
 ```
 
-1. 确定好机械臂在放置区域的拍照角度，以及放置区域整体范围。确保放置区域整体处在拍照范围之内，并尽可能垂直于放置区域中心拍照。将此时机械臂坐标coords写定在take_photo工具中，不再变化
+1、确定好机械臂在放置区域的拍照角度，以及放置区域整体范围。确保放置区域整体处在拍照范围之内，并尽可能垂直于放置区域中心拍照。将此时机械臂坐标coords写定在take_photo工具中，不再变化
+
 ```python
 else:  # placement_area
             # 移动到放置区域的拍照位置，需要确认具体放置区域坐标
             mc.send_coords([a,b,c,d,e,f], 40)#这个坐标
 ```
 
-2. 任意方法调用拍照，获取一张照片。使用像素点工具或网站打开此照片（例如https://zh.pixspy.com/），备用。
+2、任意方法调用拍照，获取一张照片。使用像素点工具或网站打开此照片（例如https://zh.pixspy.com/），备用。
 
-3. 将下面脚本保存为test.py文件，用于调整机械臂坐标。将take_photo工具中的placement_area坐标复制过来，手动更改x y坐标。**依次将机械臂夹爪中心点，对其至放置区域的四个角**。每对齐一个角，便将此时的机械臂坐标x y值记录。这样便得到放置区域边缘定位的机械臂世界坐标。将这四个x y值填入 config.json的points_arm_place。
+3、将下面脚本保存为test.py文件，用于调整机械臂坐标。将take_photo工具中的placement_area坐标复制过来，手动更改x y坐标。**依次将机械臂夹爪中心点，对其至放置区域的四个角**。每对齐一个角，便将此时的机械臂坐标x y值记录。这样便得到放置区域边缘定位的机械臂世界坐标。将这四个x y值填入 config.json的points_arm_place。
 
 ```python
 import time
@@ -437,7 +438,8 @@ mc = MyCobot('/dev/ttyUSB0', 1000000)
 mc.send_coords([a,b,110,d,e,f], 40)
 #这里的坐标，d e f值与拍照时的值相同不变；c可以设为110，此时离纸面较近，方便对齐；a b值需要手动调整
 ```
-4. 使用第2步中打开的点选像素工具，用鼠标获取四个角的图片像素坐标x y。按照刚才机械臂坐标同样的顺序，填入poinsts_pixel_place。同时新增适用于放置区域的偏移量。最终config.json如下
+4、使用第2步中打开的点选像素工具，用鼠标获取四个角的图片像素坐标x y。按照刚才机械臂坐标同样的顺序，填入poinsts_pixel_place。同时新增适用于放置区域的偏移量。最终config.json如下
+
 ```json
 {
     "points_pixel": [
@@ -474,7 +476,8 @@ mc.send_coords([a,b,110,d,e,f], 40)
     "threshold": 110
 }
 ```
-5. 修改eyeonhand.py，新增放置区域手眼标定。
+5、修改eyeonhand.py，新增放置区域手眼标定。
+
 ```python
 import json
 import numpy as np
@@ -528,7 +531,9 @@ def pixel_to_arm_place(pixel_point):
     transformed_point = affine_matrix_place @ pixel_point
     return np.round(transformed_point[:2], 1)  # 保留一位小数
 ```
-6. 在move_to工具中调用place区域的映射函数（已经在步骤3: 修改 move_to 工具中修改）
+
+6、在move_to工具中调用place区域的映射函数（已经在步骤3: 修改 move_to 工具中修改）
+
 ```python
 # 计算目标物体的中心坐标
             position = positions[0]
