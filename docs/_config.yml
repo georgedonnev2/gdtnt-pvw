@@ -1,0 +1,77 @@
+title: "Try and Test"
+description: "学习笔记，使用指导文档，等"
+base_url: "/gdtnt"
+
+# 使用 GitHub Pages 兼容的主题配置
+theme: jekyll-theme-primer
+
+# 或者使用远程主题（推荐）
+remote_theme: just-the-docs/just-the-docs
+
+# 插件配置
+plugins:
+  - jekyll-remote-theme
+
+
+
+
+# 基本设置
+url: "https://georgedonnev2.github.io"
+repository: "georgedonnev2/gdtnt"
+
+# 排除不必要的文件
+exclude:
+  - README.md
+  - LICENSE
+
+## add by George, according to https://just-the-docs.com/docs/configuration/
+
+# Navigation sidebar
+# Enable or disable the side/mobile menu globally
+# Nav menu can also be selectively enabled or disabled using page variables or the minimal layout
+nav_enabled: true
+
+
+# Back to Top
+back_to_top: true
+back_to_top_text: "Back to top"
+
+# Display search button
+# Enable or disable the search button that appears in the bottom right corner of every page
+# Supports true or false (default)
+search.button: true
+
+# Copy button
+# For copy button on code
+enable_copy_code_button: true
+
+## ---
+# Footer last edited timestamp
+last_edit_timestamp: true # show or hide edit time - page must have `last_modified_date` defined in the frontmatter
+last_edit_time_format: "%b %e %Y at %I:%M %p" # uses ruby's time format: https://ruby-doc.org/stdlib-2.7.0/libdoc/time/rdoc/Time.html
+
+# Footer "Edit this page on GitHub" link text
+gh_edit_link: true # show or hide edit this page link
+gh_edit_link_text: "Edit this page on GitHub."
+gh_edit_repository: "https://github.com/just-the-docs/just-the-docs" # the github URL for your repo
+gh_edit_branch: "main" # the branch that your docs is served from
+# gh_edit_source: docs # the source that your files originate from
+
+
+# Callouts
+callouts:
+  warning:
+    title: Warning
+    color: red
+  note:
+    title: 注释
+    color: green
+  highlight:
+    title: 高亮
+    color: yellow
+  new:
+    title: 新增
+    color: blue
+  new-title:
+    title: 新增
+    color: blue
