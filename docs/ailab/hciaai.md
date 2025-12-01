@@ -1,7 +1,10 @@
 ---
-title: 首页
+title: HCIA-AI相关说明
 layout: default
 ---
+
+# HCIA-AI
+{: .no_toc }
 
 <details open markdown="block">
   <summary>
@@ -12,9 +15,6 @@ layout: default
 {:toc}
 </details>
 
-
-# HCIA-AI
-{: .no_toc }
 
 ## 参考题库
 参考题库：[链接](./hciaai.assets/HCIA-AI完整版.pdf)
@@ -37,6 +37,9 @@ layout: default
 建议：结合参考题库，3套模拟题，每套都多刷几次。
 
 ## 直播回看
+
+{: .note}
+手机可观看直播回看。电脑似乎不行。
 
 - 第1讲（11月10日）：[https://talentstore.shixizhi.huawei.com/live/viewer.htm?actId=7rd9930o&liveId=1986715835052445698&tenant_id=1513486475269996546&sxz-lang=zh_CN](https://talentstore.shixizhi.huawei.com/live/viewer.htm?actId=7rd9930o&liveId=1986715835052445698&tenant_id=1513486475269996546&sxz-lang=zh_CN)
 
