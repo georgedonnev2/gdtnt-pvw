@@ -1,7 +1,7 @@
 ---
 title: 首页
 layout: default
-nav_order: 0
+nav_order: a0
 ---
 
 <details open markdown="block">
@@ -15,4 +15,7 @@ nav_order: 0
 
 # 欢迎访问 TnT (Try and Test)
 
+欢迎访问 TnT。
+
 本网站存放一些学习笔记、使用指导文档，等。
+
