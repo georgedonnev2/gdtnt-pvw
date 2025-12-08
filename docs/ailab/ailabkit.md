@@ -29,7 +29,98 @@ jetson@jetson-Yahboom:/elephant-ai$ pwd
 /elephant-ai
 ```
 
+<br>
 
+执行 `sudo python3 agent.py`，启动视觉实验箱样例程序： 
+```bash
+jetson@jetson-Yahboom:/elephant-ai$ sudo python3 agent.py
+WARNING: Carrier board is not from a Jetson Developer Kit.
+WARNNIG: Jetson.GPIO library has not been verified with this carrier board,
+WARNING: and in fact is unlikely to work correctly.
+<USER>:
+```
+
+<br>
+
+放置一些积木，在桌上图纸的带 + 号的方框内。积木上的蓝色、红色、绿色等朝上。
+
+<br>
+
+在 `<USER>:` 提示符后面，输入 `grab green cube and move -80,200`
+
+```bash
+<USER>:grab green cube and move -80,200
+<LLM>:我需要先抓取绿色方块，然后将其移动到指定位置。根据指令，我需要先使用grab_object，然后使用move_to。
+
+✿FUNCTION✿: grab_object
+✿ARGS✿: {"object_name": "green cube"}
+
+✿FUNCTION✿: move_to
+✿ARGS✿: {"target_coord": [-80,200], "target_height": 110}
+functions_and_args: [('grab_object', {'object_name': 'green cube'}), ('move_to', {'target_coord': [-80, 200], 'target_height': 110})]
+#################### <函数执行> ####################
+Image saved as captured_image.jpg
+[{'x1': 0, 'x2': 179, 'y1': 332, 'y2': 584}]
+像素坐标 (57.28, 219.84) 对应的机械臂坐标为: [212.8  68.1]
+#################### <函数执行> #################### 
+
+#################### <函数执行> ####################
+*************
+[-80, 200]
+Objects arranged successfully
+#################### <函数执行> #################### 
+
+<USER>:
+```
+
+{: .note}
+move -80,200。分别是 x、y、z坐标。z可以省略，默认是110。x和y是什么方向，可参考图纸上的标识。z的正方向是桌面向上。
+
+同时按下 `ctrl`和`c`，可退出。
+```bash
+<USER>:^CTraceback (most recent call last):
+  File "agent.py", line 50, in <module>
+    user_input = input("<USER>:")
+KeyboardInterrupt
+
+jetson@jetson-Yahboom:/elephant-ai$ 
+```
+
+### 抓不准该如何调整
+
+如果抓不准，可以调整 `/elephant-ai/config.json` 中的 x、y、z 的偏移量。
+```json
+{
+    "points_pixel": [
+        [320,220],
+        [590,430],
+        [72,31],
+        [590,26]
+    ],
+    "points_arm": [
+        [210,-30],
+        [140, -110],
+        [280,70],
+        [280,-110]
+    ],
+    "x": 10,
+    "y": -7,
+    "z": -5,
+    "voice":false,
+    "threshold": 110
+}
+```
+
+如何修改 `config.json`：
+- 执行 `sudo vim config.json` 打开文件
+- 删除。光标移动到要删除字符的位置，按 `Esc` 键，然后再按 `x`，可删除字符。
+- 插入。光标移动到要插入字符的位置，按 `Esc` 键，然后再按 `i`，然后输入新的字符。
+- 保存退出。按 `Esc` 键，然后输入 `:wq`，再按`回车`键。
+
+执行 `cat config.json`，确认确实修改了。
+```bash
+jetson@jetson-Yahboom:/elephant-ai$ cat config.json
+```
 
 ## 语音实验箱
 
