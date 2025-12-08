@@ -23,6 +23,8 @@ repository: "georgedonnev2/gdtnt"
 exclude:
   - README.md
   - LICENSE
+  - elephant-ai
+  - jetson_ai
 
 ## add by George, according to https://just-the-docs.com/docs/configuration/
 
