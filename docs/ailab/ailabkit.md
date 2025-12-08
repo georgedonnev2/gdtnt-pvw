@@ -44,8 +44,6 @@ WARNING: and in fact is unlikely to work correctly.
 
 放置一些积木，在桌上图纸的带 + 号的方框内。积木上的蓝色、红色、绿色等朝上。
 
-<br>
-
 在 `<USER>:` 提示符后面，输入 `grab green cube and move -80,200`
 
 ```bash
@@ -88,7 +86,9 @@ jetson@jetson-Yahboom:/elephant-ai$
 
 ### 抓不准该如何调整
 
-如果抓不准，可以调整 `/elephant-ai/config.json` 中的 x、y、z 的偏移量。
+- 机械臂底座，是否在图纸的矩形中。
+
+- 如果还抓不准，可以调整 `/elephant-ai/config.json` 中的 x、y、z 的偏移量。
 ```json
 {
     "points_pixel": [
@@ -121,6 +121,76 @@ jetson@jetson-Yahboom:/elephant-ai$
 ```bash
 jetson@jetson-Yahboom:/elephant-ai$ cat config.json
 ```
+
+<hr>
+
+## 华为昇腾开发板
+
+**0、账号密码**
+- 账号：`HwHiAiUser` / 密码：`Mind@123`
+- 账号：`root` / 密码：`Mind@123`
+
+**1、登录后，执行 `su - root` 切换到 `root` 用户**
+
+```bash
+(base) HwHiAiUser@davinci-mini:~$ su - root
+Password: 
+(base) root@davinci-mini:~# 
+```
+
+{. :note}
+输密码时，屏幕不会显示。输完密码后按回车即可。
+{. :note}
+切换到 root 用户，是为了体验摄像头识别物体。
+
+**2、执行 `cd` 切换到相关目录中**
+
+```bash
+(base) root@davinci-mini:~# cd /home/HwHiAiUser/samples/notebooks
+(base) root@davinci-mini:/home/HwHiAiUser/samples/notebooks# 
+```
+
+**3、执行 `jupyter lab --allow-root` 启动后台**
+
+```bash
+(base) root@davinci-mini:/home/HwHiAiUser/samples/notebooks# jupyter lab --allow-root
+[I 2025-12-08 13:55:37.302 ServerApp] Package jupyterlab took 0.0001s to import
+[I 2025-12-08 13:55:37.418 ServerApp] Package jupyter_lsp took 0.1141s to import
+[W 2025-12-08 13:55:37.418 ServerApp] A `_jupyter_server_extension_points` function was not found in jupyter_lsp. Instead, a `_jupyter_server_extension_paths` function was found and will be used for now. This function name will be deprecated in future releases of Jupyter Server.
+[I 2025-12-08 13:55:37.470 ServerApp] Package jupyter_server_terminals took 0.0502s to import
+[I 2025-12-08 13:55:37.471 ServerApp] Package notebook_shim took 0.0001s to import
+[W 2025-12-08 13:55:37.472 ServerApp] A `_jupyter_server_extension_points` function was not found in notebook_shim. Instead, a `_jupyter_server_extension_paths` function was found and will be used for now. This function name will be deprecated in future releases of Jupyter Server.
+[I 2025-12-08 13:55:37.477 ServerApp] jupyter_lsp | extension was successfully linked.
+[I 2025-12-08 13:55:37.494 ServerApp] jupyter_server_terminals | extension was successfully linked.
+[I 2025-12-08 13:55:37.514 ServerApp] jupyterlab | extension was successfully linked.
+[I 2025-12-08 13:55:39.552 ServerApp] notebook_shim | extension was successfully linked.
+[I 2025-12-08 13:55:39.683 ServerApp] notebook_shim | extension was successfully loaded.
+[I 2025-12-08 13:55:39.693 ServerApp] jupyter_lsp | extension was successfully loaded.
+[I 2025-12-08 13:55:39.697 ServerApp] jupyter_server_terminals | extension was successfully loaded.
+[I 2025-12-08 13:55:39.699 LabApp] JupyterLab extension loaded from /usr/local/miniconda3/lib/python3.9/site-packages/jupyterlab
+[I 2025-12-08 13:55:39.699 LabApp] JupyterLab application directory is /usr/local/miniconda3/share/jupyter/lab
+[I 2025-12-08 13:55:39.707 LabApp] Extension Manager is 'pypi'.
+[I 2025-12-08 13:55:39.719 ServerApp] jupyterlab | extension was successfully loaded.
+[I 2025-12-08 13:55:39.720 ServerApp] Serving notebooks from local directory: /home/HwHiAiUser/samples/notebooks
+[I 2025-12-08 13:55:39.721 ServerApp] Jupyter Server 2.5.0 is running at:
+[I 2025-12-08 13:55:39.721 ServerApp] http://localhost:8888/lab?token=f20c1335ecc7d52f63a372cbed8a12fccbd336bf590e1a96
+[I 2025-12-08 13:55:39.721 ServerApp]     http://127.0.0.1:8888/lab?token=f20c1335ecc7d52f63a372cbed8a12fccbd336bf590e1a96
+[I 2025-12-08 13:55:39.721 ServerApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+[W 2025-12-08 13:55:39.750 ServerApp] No web browser found: Error('could not locate runnable browser').
+[C 2025-12-08 13:55:39.750 ServerApp] 
+    
+    To access the server, open this file in a browser:
+        file:///root/.local/share/jupyter/runtime/jpserver-9111-open.html
+    Or copy and paste one of these URLs:
+        http://localhost:8888/lab?token=f20c1335ecc7d52f63a372cbed8a12fccbd336bf590e1a96
+        http://127.0.0.1:8888/lab?token=f20c1335ecc7d52f63a372cbed8a12fccbd336bf590e1a96
+```
+
+**后续步骤，请参考如下链接**
+- [登录 jupyter lab](https://www.hiascend.com/document/detail/zh/Atlas200IDKA2DeveloperKit/23.0.RC2/Getting%20Started%20with%20Application%20Development/paqe/paqe_0002.html)
+- [目标检测样例](https://www.hiascend.com/document/detail/zh/Atlas200IDKA2DeveloperKit/23.0.RC2/Getting%20Started%20with%20Application%20Development/paqe/paqe_0003.html)
+
+<hr>
 
 ## 语音实验箱
 
