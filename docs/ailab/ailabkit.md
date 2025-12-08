@@ -137,12 +137,11 @@ jetson@jetson-Yahboom:/elephant-ai$ cat config.json
 Password: 
 (base) root@davinci-mini:~# 
 ```
+{: .note}
+输密码时，屏幕不会显示。输完密码后按回车即可。
 
-{. :note}
-输密码时，屏幕不会显示。输完密码后按回车即可。切换到 root 用户，是为了体验摄像头识别物体。
-
-<!-- {. :note}
-切换到 root 用户，是为了体验摄像头识别物体。 -->
+{: .note}
+切换到 root 用户，是为了体验摄像头识别物体。
 
 **2、执行 `cd` 切换到相关目录中**
 
