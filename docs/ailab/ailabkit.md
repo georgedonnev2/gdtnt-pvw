@@ -86,7 +86,9 @@ jetson@jetson-Yahboom:/elephant-ai$
 
 ### 抓不准该如何调整
 
-- 机械臂底座，是否在图纸的矩形中。
+- 机械臂上的摄像头，是否可以拍摄到图像。运行开发板上的应用 `文件(files)`，找到机械臂所在目录中的文件 `captured_image.jpg`，看看是否有图像。期望是有图像的。
+
+- 其次，看看机械臂底座，是否在图纸的矩形中。
 
 - 如果还抓不准，可以调整 `/elephant-ai/config.json` 中的 x、y、z 的偏移量。
 ```json

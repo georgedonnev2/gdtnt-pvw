@@ -30,7 +30,7 @@ nav_order: 20
 - 开发板IP地址。开发板透明窗口顶部的小屏幕显示的 `IPA: 172.18.xxx.xxx`，就是IP地址。或者在 `终端(terminal)` 执行命令 `ifconfig | grep 172` 也可获得。
 
 {: .important-title}
-> 实验结束离开时间：
+> 实验结束离开时：
 >
 > 1、椅子复位。放到桌子下面。
 >
@@ -135,22 +135,76 @@ if __name__ == "__main__":
 
 <hr>
 
+## 新建目录获取 elephant-ai 代码
+
+1. 用 `jetson` 账号登录开发板后，在 `jetson` 账号的 HOME 目录新建子目录 `ailab`，并切换到子目录 `ailab`。
+```bash
+jetson@jetson-Yahboom:~$ cd
+jetson@jetson-Yahboom:~$ pwd
+/home/jetson
+jetson@jetson-Yahboom:~$ mkdir ailab
+jetson@jetson-Yahboom:~$ cd ailab
+jetson@jetson-Yahboom:~/ailab$ pwd
+/home/jetson/ailab
+```
+
+2. 下载 elephant-ai 源码：[点击下载](./imrobot251211.assets/elephant-ai-251211.zip)
+
+3. 从 HOME 目录下的 `Downloads` 子目录，复制 `elephant-ai-251211.zip` 到当前目录 `ailab`，然后执行 `unzip` 解压缩。
+```bash
+jetson@jetson-Yahboom:~/ailab$ cp ~/Downloads/elephant-ai-251211.zip .
+jetson@jetson-Yahboom:~/ailab$ unzip elephant-ai-251211.zip
+```
+
+4. 验证样例代码是否工作正常。放几个积木到带 + 的方框中（比如绿色、蓝色积木，颜色面朝上），执行 `python3 agent2.py` （或者 `python3 agent.py`）启动样例程序。在出现的 `<USER>:` 提示符后，输入 `grab green cube and move to 0,200`，查看机械臂动作是否符合预期。
+```bash
+jetson@jetson-Yahboom:~/ailab/elephant-ai-251211$ python3 agent2.py
+WARNING: Carrier board is not from a Jetson Developer Kit.
+WARNNIG: Jetson.GPIO library has not been verified with this carrier board,
+WARNING: and in fact is unlikely to work correctly.
+进入交互模式...
+<USER>:grab green cube and move to 0,200
+<LLM>:✿FUNCTION✿: grab_object
+✿ARGS✿: {"object_name": "绿色方块"}
+✿FUNCTION✿: move_to
+✿ARGS✿: {"target_coord": [0, 200], "target_height": 110}
+functions_and_args: [('grab_object', {'object_name': '绿色方块'}), ('move_to', {'target_coord': [0, 200], 'target_height': 110})]
+#################### <函数执行> ####################
+Image saved as captured_image.jpg
+[{'x1': 408, 'x2': 589, 'y1': 745, 'y2': 980}]
+像素坐标 (319.04, 414.0) 对应的机械臂坐标为: [144.7   2.1]
+#################### <函数执行> #################### 
+
+#################### <函数执行> ####################
+*************
+[0, 200]
+Objects arranged successfully
+#################### <函数执行> #################### 
+
+<USER>:
+```
+
+{: .important}
+如果抓取不大精确，可参考：[抓不准该如何调整](./ailabkit.md/#抓不准该如何调整) 做调整。
+
+<hr>
+
 ## 录音（和播放）
 
 ### 尝试录音
 
-和大模型（比如 DeepSeek 等）交互：
+1. 和大模型（比如 DeepSeek 等）交互：
 
 `jetson开发板，ubuntu系统，接了USB麦克风和喇叭，怎么把对麦克风说的话，保存为音频文件，保存为wav格式，并回放。请输出python代码样例。`
 
-大模型建议首先安装依赖的库：
+2. 大模型建议首先安装依赖的库：
 ```bash
 sudo apt-get update
 sudo apt-get install libportaudio2 portaudio19-dev python3-dev  # sounddevice的依赖
 pip3 install sounddevice numpy scipy
 ```
 
-并给出了样例代码。新建文件 `q5test.py`，先录音试试。
+3. 并给出了样例代码。新建文件 `q5test.py` ，保存到开发板的 `/home/jetson/ailab/elephant-ai-251211` 目录中，先录音试试。
 
 ```python
 import sounddevice as sd
