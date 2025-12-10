@@ -157,6 +157,7 @@ jetson@jetson-Yahboom:~/ailab$ unzip elephant-ai-251211.zip
 ```
 
 4. 验证样例代码是否工作正常。放几个积木到带 + 的方框中（比如绿色、蓝色积木，颜色面朝上），执行 `python3 agent2.py` （或者 `python3 agent.py`）启动样例程序。在出现的 `<USER>:` 提示符后，输入 `grab green cube and move to 0,200`，查看机械臂动作是否符合预期。
+
 ```bash
 jetson@jetson-Yahboom:~/ailab/elephant-ai-251211$ python3 agent2.py
 WARNING: Carrier board is not from a Jetson Developer Kit.
@@ -215,10 +216,10 @@ import os
 
 # ========== 核心参数配置 (根据你的设备信息已优化) ==========
 # 录音设备参数
-INPUT_DEVICE = 'pulse'  # 使用你的USB麦克风硬件地址[citation:8]
-OUTPUT_DEVICE = 'pulse'  # 使用你的USB麦克风硬件地址[citation:8]
-# INPUT_DEVICE = 'plughw:3,0'  # 使用你的USB麦克风硬件地址[citation:8]
-SAMPLE_RATE = 44100          # 采样率 (Hz)，与你的设备匹配[citation:4]
+INPUT_DEVICE = 'pulse'  # 使用你的USB麦克风硬件地址
+OUTPUT_DEVICE = 'pulse'  # 使用你的USB麦克风硬件地址
+# INPUT_DEVICE = 'plughw:3,0'  # 使用你的USB麦克风硬件地址
+SAMPLE_RATE = 44100          # 采样率 (Hz)，与你的设备匹配
 DURATION = 5                 # 录音时长 (秒)
 CHANNELS = 1                 # 声道数，单声道兼容性最好
 OUTPUT_FILENAME = 'recording.wav'
@@ -294,3 +295,29 @@ if __name__ == "__main__":
 ### 录制为 `Recording.flac`
 
 参考样例代码：[q5.py](./imrobot251211.assets/q5.py)
+
+<hr>
+
+## 用语音指挥机械臂
+
+1. 在开发板上再新启动 `终端(terminals)`，并切换到实验目录中，然后运行 `python3 agent2.py -v`。也可以运行 `python3 agent.py`，运行之前先修改 `config.json` 中 `voice` 为 `voice:true`。
+
+2. 在开发板上启动 `终端(terminals)`，并切换到实验目录中，然后运行 `python3 q5.py`，开始录音说话。比如，`抓取蓝色方块，并移动到 -80,200`。
+
+3. 可以尝试更多语音，比如：
+  - `抓取鱼骨头，并移动到0,200`
+  - ……
+
+{: .note}
+至此，实验主要任务基本完成。
+
+<hr>
+
+## 拓展任务（可选）
+
+1. 完善录音代码 `q5.py`，比如：
+  - 执行 `python3 q5.py` 后，就一直运行。直到同时按下 `ctrl` 和 `c` 退出。
+  - 按某个键开始录音，然后说话录音，录音完成后按某个键此次结束录音。当前录音固定长度 x 秒。
+
+2. 优化机械臂代码 `agent2.py` （或 `agent.py`），比如：
+  - 提示正在等待 `Recording.flac`。当前界面提示不友好。
