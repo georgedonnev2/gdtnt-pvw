@@ -5,7 +5,7 @@ parent: AI实验课
 nav_order: 20
 ---
 
-# 机械臂开发示例-251211-1
+# 机械臂开发示例-251211
 {: .no_toc }
 
 在现有机械臂样例程序基础上，增加语音控制，而不是通过界面输入 `grab green cube and move to -80,200`。
@@ -142,7 +142,7 @@ if __name__ == "__main__":
 
 ## 新建目录获取 elephant-ai 代码（建议）
 
-1. 用 `jetson` 账号登录开发板后，在 `jetson` 账号的 HOME 目录新建子目录 `ailab`，并切换到子目录 `ailab`。
+1、用 `jetson` 账号登录开发板后，在 `jetson` 账号的 HOME 目录新建子目录 `ailab`，并切换到子目录 `ailab`。
 
 ```bash
 jetson@jetson-Yahboom:~$ cd
@@ -154,16 +154,16 @@ jetson@jetson-Yahboom:~/ailab$ pwd
 /home/jetson/ailab
 ```
 
-2. 下载 elephant-ai 源码：[点击下载](./imrobot251211.assets/elephant-ai-251211.zip)
+2、下载 elephant-ai 源码：[点击下载](./imrobot251211.assets/elephant-ai-251211.zip)
 
-3. 从 HOME 目录下的 `Downloads` 子目录，复制 `elephant-ai-251211.zip` 到当前目录 `ailab` 中，然后执行 `unzip` 解压缩。
+3、从 HOME 目录下的 `Downloads` 子目录，复制 `elephant-ai-251211.zip` 到当前目录 `ailab` 中，然后执行 `unzip` 解压缩。
 
 ```bash
 jetson@jetson-Yahboom:~/ailab$ cp ~/Downloads/elephant-ai-251211.zip .
 jetson@jetson-Yahboom:~/ailab$ unzip elephant-ai-251211.zip
 ```
 
-4. 验证样例代码是否工作正常。放几个积木到带 + 的方框中（比如绿色、蓝色积木，颜色面朝上），执行 `python3 agent2.py` （或者 `python3 agent.py`）启动样例程序。稍后出现 `<USER>:` 提示符，然后输入比如  `grab green cube and move to 0,200`，查看机械臂动作是否符合预期。
+4、验证样例代码是否工作正常。放几个积木到带 + 的方框中（比如绿色、蓝色积木，颜色面朝上），执行 `python3 agent2.py` （或者 `python3 agent.py`）启动样例程序。稍后出现 `<USER>:` 提示符，然后输入比如  `grab green cube and move to 0,200`，查看机械臂动作是否符合预期。
 
 ```bash
 jetson@jetson-Yahboom:~/ailab/elephant-ai-251211$ python3 agent2.py
@@ -201,9 +201,9 @@ Objects arranged successfully
 
 ### 尝试录音
 
-1. 和大模型（比如 DeepSeek 等）交互，比如：`jetson开发板，ubuntu系统，接了USB麦克风和喇叭，怎么把对麦克风说的话，保存为音频文件，保存为wav格式，并回放。请输出python代码样例。`
+1、和大模型（比如 DeepSeek 等）交互，比如：`jetson开发板，ubuntu系统，接了USB麦克风和喇叭，怎么把对麦克风说的话，保存为音频文件，保存为wav格式，并回放。请输出python代码样例。`
 
-2. 大模型建议首先安装依赖的库：
+2、大模型建议首先安装依赖的库：
 
 ```bash
 sudo apt-get update
@@ -211,7 +211,7 @@ sudo apt-get install libportaudio2 portaudio19-dev python3-dev  # sounddevice的
 pip3 install sounddevice numpy scipy
 ```
 
-3. 并给出了样例代码。新建文件 `q5test.py` ，保存到开发板的 `/home/jetson/ailab/elephant-ai-251211` 目录中，先录音试试。
+3、并给出了样例代码。新建文件 `q5test.py` ，保存到开发板的 `/home/jetson/ailab/elephant-ai-251211` 目录中，先录音试试。
 
 ```python
 import sounddevice as sd
@@ -298,11 +298,11 @@ if __name__ == "__main__":
 
 ### 录音文件保存为 `flac` 格式
 
-继续和大模型交互，尝试将语音录制为 `flac` 文件。一种可行的选项是用 `ffmpeg` 将 `wav` 文件转换为 `flac` 文件。
+- 继续和大模型交互，尝试将语音录制为 `flac` 文件。一种可行的选项是用 `ffmpeg` 将 `wav` 文件转换为 `flac` 文件。
 
-可积极尝试其他可行的方法。
+- 可积极尝试其他可行的方法。
 
-参考样例代码：[q5flac.py](./imrobot251211.assets/q5flac.py)
+- 参考样例代码：[q5flac.py](./imrobot251211.assets/q5flac.py)
 
 ### 录制为 `Recording.flac`
 
