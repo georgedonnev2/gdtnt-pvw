@@ -21,41 +21,31 @@ nav_order: 20
 {:toc}
 </details>
 
+<hr>
+
+## 相关说明
+
+- elephant-ai 源代码。
+- 开发板账号密码（如需要用到）：`jetson` / `yahboom`
+- 开发板IP地址。开发板透明窗口顶部的小屏幕显示的 `IPA: 172.18.xxx.xxx`，就是IP地址。或者在 `终端(terminal)` 执行命令 `ifconfig | grep 172` 也可获得。
+
+{: .important-title}
+> 实验结束离开时间：
+>
+> 1、椅子复位。放到桌子下面。
+>
+> 2、关机并拔掉电源。在开发板 `终端(terminal)` 执行命令 `shutdown -h now` 后，从开发板透明窗口观察并等待散热风扇停止，然后拔掉机械臂电源、开发板电源、显示屏电源。 
+
+<hr>
+
 ## 参考方案
 
 `agent.py` 中，会读取配置文件 `config.json` 中的 `voice` 的取值。如果是  `voice: True`，就会根据录音文件 `Recording.flac` 做相关处理，替代在界面上输入指令。
 
 ```python
-from react_agent.LLM import RequestLLM
-from react_agent.agent import ReactAgent
-from react_agent.tools import tools_registry
-import time
-import json
-import os
-import voice
-import tools
-
-def wait_for_file_update(file_path, last_mtime):
-    """ 持续等待文件更新 """
-    while True:
-        try:
-            current_mtime = os.path.getmtime(file_path)
-            if current_mtime != last_mtime:
-                return current_mtime
-        except FileNotFoundError:
-            pass
-        time.sleep(1)  # 等待 1 秒后再检查
-
+# ...
 if __name__ == "__main__":
-    # 1. 实例化agent
-    llm = RequestLLM(base_url="https://api.deepseek.com/v1/", model_name="deepseek-chat")
-    agent = ReactAgent(llm)
-    # 2. 注册工具
-    for name, cls in tools_registry.items():
-        agent.register_tool(name, cls)
-    # 3. 更新系统prompt
-    agent.update_system_message()
-
+    # ...
     with open("config.json", "r") as config_file:
         config_data = json.load(config_file)
 
@@ -82,34 +72,7 @@ if __name__ == "__main__":
 
 `agent2.py` 和 `agent.py` 类似。可以读配置文件 `config.json` 中 `voice` 的配置，或者启动时带命令行参数 `sudo python3 agent2.py -v` 。
 ```python
-from react_agent.LLM import RequestLLM
-from react_agent.agent import ReactAgent
-from react_agent.tools import tools_registry
-import time
-import json
-import os
-import voice
-import tools
-import sys
-import argparse
-
-def exit_function():
-    """在程序退出时执行的清理函数"""
-    print("\n程序即将退出，正在执行清理操作（如机械臂归位）...")
-    # 在这里添加机械臂归位的代码
-    print("清理完成，程序退出。")
-
-def wait_for_file_update(file_path, last_mtime):
-    """ 持续等待文件更新 """
-    while True:
-        try:
-            current_mtime = os.path.getmtime(file_path)
-            if current_mtime != last_mtime:
-                return current_mtime
-        except FileNotFoundError:
-            pass
-        time.sleep(1)  # 等待 1 秒后再检查
-
+# ...
 def parse_arguments():
     """解析命令行参数"""
     parser = argparse.ArgumentParser(description='React Agent with command-line input')
@@ -125,16 +88,7 @@ if __name__ == "__main__":
     # 解析命令行参数
     args = parse_arguments()
     
-    # 1. 实例化agent
-    llm = RequestLLM(base_url="https://api.deepseek.com/v1", model_name="deepseek-chat")
-    agent = ReactAgent(llm)
-    
-    # 2. 注册工具
-    for name, cls in tools_registry.items():
-        agent.register_tool(name, cls)
-    
-    # 3. 更新系统prompt
-    agent.update_system_message()
+    # ...
     
     with open("config.json", "r") as config_file:
         config_data = json.load(config_file)
@@ -183,82 +137,106 @@ if __name__ == "__main__":
 
 ## 录音（和播放）
 
+### 尝试录音
+
+和大模型（比如 DeepSeek 等）交互：
+
+`jetson开发板，ubuntu系统，接了USB麦克风和喇叭，怎么把对麦克风说的话，保存为音频文件，保存为wav格式，并回放。请输出python代码样例。`
+
+大模型建议首先安装依赖的库：
 ```bash
-sudo apt-get install libportaudio2 portaudio19-dev python3-dev
+sudo apt-get update
+sudo apt-get install libportaudio2 portaudio19-dev python3-dev  # sounddevice的依赖
 pip3 install sounddevice numpy scipy
 ```
 
-```bash
-# 列出录音设备
-arecord -l
-# 列出播放设备
-aplay -l
-```
-
-可以和自己偏好的大模型（比如 DeepSeek 等）对话，获取如何用 USB 麦克风/喇叭 将语音录制为文件。
-
-本次实验使用 得普声 Q5+ USB 麦克风/喇叭。
-
-以下是样例程序，仅供参考。
+并给出了样例代码。新建文件 `q5test.py`，先录音试试。
 
 ```python
 import sounddevice as sd
 import numpy as np
-import soundfile as sf # 导入soundfile库
-# 关键：从scipy.io.wavfile中导入write函数
-from scipy.io.wavfile import write
+from scipy.io.wavfile import write as write_wav
 import subprocess
 import os
 
-# 使用PulseAudio作为音频后端
-input_device_index = 'pulse'  # 或使用索引 32
-output_device_index = 'pulse' # 播放也用pulse
+# ========== 核心参数配置 (根据你的设备信息已优化) ==========
+# 录音设备参数
+INPUT_DEVICE = 'pulse'  # 使用你的USB麦克风硬件地址[citation:8]
+OUTPUT_DEVICE = 'pulse'  # 使用你的USB麦克风硬件地址[citation:8]
+# INPUT_DEVICE = 'plughw:3,0'  # 使用你的USB麦克风硬件地址[citation:8]
+SAMPLE_RATE = 44100          # 采样率 (Hz)，与你的设备匹配[citation:4]
+DURATION = 5                 # 录音时长 (秒)
+CHANNELS = 1                 # 声道数，单声道兼容性最好
+OUTPUT_FILENAME = 'recording.wav'
 
-# 录音参数（根据pulse设备信息，它支持多种采样率）
-fs = 44100  # 与你的USB设备默认采样率一致
-duration = 15
-channels = 1  # 单声道，兼容性最佳
+# ========== 主程序：录音、保存、回放 ==========
+def record_and_playback():
+    print(f"准备录音 {DURATION} 秒...")
+    print(f"输入设备: {INPUT_DEVICE}, 采样率: {SAMPLE_RATE}Hz")
+    
+    try:
+        # 1. 录制音频
+        print("▶️ 开始录音...")
+        audio_data = sd.rec(int(DURATION * SAMPLE_RATE),
+                            samplerate=SAMPLE_RATE,
+                            channels=CHANNELS,
+                            dtype='int16',        # 16位PCM格式[citation:5]
+                            device=INPUT_DEVICE)
+        sd.wait()  # 等待录音结束
+        print("✅ 录音结束。")
+        
+        # 尝试播放刚录制的音频
+        print("正在播放录音...")
+        sd.play(audio_data, SAMPLE_RATE, device=OUTPUT_DEVICE)
+        sd.wait()
+        print("播放结束。")
+        
+        # 2. 处理数据形状 (避免后续问题)
+        if audio_data.ndim > 1 and audio_data.shape[1] == 1:
+            audio_data = audio_data.squeeze()
+        
+        # 3. 保存为WAV文件
+        write_wav(OUTPUT_FILENAME, SAMPLE_RATE, audio_data)
+        print(f"💾 音频已保存为: {OUTPUT_FILENAME}")
+        
+        # 4. 验证并回放
+        print("\n正在尝试播放录音...")
+        if os.path.exists(OUTPUT_FILENAME):
+            # 方法1: 使用系统命令aplay播放 (最可靠)[citation:4]
+            print("🎵 使用系统音频设备播放...")
+            try:
+                subprocess.run(['aplay', '-D', 'default', OUTPUT_FILENAME], check=True)
+            except subprocess.CalledProcessError:
+                # 方法2: 备用方案，使用sd.play进行Python内部播放
+                print("⚠️  系统播放失败，尝试内部播放...")
+                sd.play(audio_data, SAMPLE_RATE)
+                sd.wait()
+            print("✅ 播放完成。")
+        else:
+            print("❌ 错误：录音文件未生成。")
+            
+    except Exception as e:
+        print(f"❌ 程序出错: {e}")
 
-print("开始录音...")
-recording = sd.rec(int(duration * fs),
-                   samplerate=fs,
-                   channels=channels,
-                   dtype='int16', # soundfile会自动处理int16到float32的转换
-                   device=input_device_index)
-sd.wait()
-print("录音结束。")
-
-# 在 sd.wait() 之后，sf.write() 之前，添加：
-print("录制数据的类型:", recording.dtype)
-print("录制数据的最小值:", recording.min())
-print("录制数据的最大值:", recording.max())
-print("录制数据的形状:", recording.shape)
-
-
-# 保存为WAV文件
-file_wav = "output.wav" 
-write(file_wav, fs, recording)
-print(f"音频文件已保存为: {file_wav}")
-
-# print(f"保存前的形状: {recording.shape}") # 应该是 (220500, 1)
-# # 关键修复：移除多余的维度
-# recording = recording.squeeze() # 现在形状变为 (220500,)
-# print(f"保存前的形状: {recording.shape}")
-
-# # 保存为FLAC文件
-# file_flac = "output.flac" # 文件扩展名改为 .flac
-# sf.write(file_flac, recording, fs, subtype='PCM_16') # 指定16位PCM格式
-# print(f"音频文件已保存为: {file_flac}")
-
-# 2. 使用ffmpeg将WAV转换为FLAC
-file_flac = "Recording.flac"
-# 静默模式运行，-y表示覆盖输出文件
-subprocess.run(['ffmpeg', '-i', file_wav, '-c:a', 'flac', '-y', file_flac], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-print(f"FLAC文件已保存: {file_flac}")
-
-# 尝试播放刚录制的音频
-print("正在播放录音...")
-sd.play(recording, fs, device=output_device_index)
-sd.wait()
-print("播放结束。")
+if __name__ == "__main__":
+    # 可选：运行前列出所有音频设备，方便调试
+    print("=== 可用的音频设备 ===")
+    print(sd.query_devices())
+    print("=" * 30)
+    
+    record_and_playback()
 ```
+
+假定没有成功，可以尝试：
+
+### 录音文件保存为 `flac` 格式
+
+继续和大模型交互，尝试将语音录制为 `flac` 文件。一种可行的选项是用 `ffmpeg` 将 `wav` 文件转换为 `flac` 文件。
+
+可积极尝试其他可行的方法。
+
+参考样例代码：[q5flac.py](./imrobot251211.assets/q5flac.py)
+
+### 录制为 `Recording.flac`
+
+参考样例代码：[q5.py](./imrobot251211.assets/q5.py)
